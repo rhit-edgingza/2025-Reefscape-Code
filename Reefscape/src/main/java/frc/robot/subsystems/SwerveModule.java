@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import java.lang.module.Configuration;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 //import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
@@ -13,7 +15,11 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.*;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -38,6 +44,7 @@ public class SwerveModule extends SubsystemBase {
    * for both rotation and linear movement
    */
 
+
   private static SwerveBase swerveDrive;
   public PIDController testRotationController;
   public PIDController RotationController;
@@ -46,21 +53,23 @@ public class SwerveModule extends SubsystemBase {
 
   public double PositionConversionFactor = 2.0 * Math.PI / SwerveConstants.driveGearRatio;
   public double VelocityConversionFactor = 2.0 * Math.PI / 60 / SwerveConstants.driveGearRatio;
+  public double AngleConversionFactor = 2.0 * Math.PI / SwerveConstants.angleGearRatio;
 
   private final TalonFX driveMotor;
   private final CurrentLimitsConfigs driveMotorLimiter;
-  private final CANSparkMax rotationMotor;
+  private final TalonFX rotationMotor;
+  private final CurrentLimitsConfigs rotationMotorLimiter;
 
   public TalonFX getDriveMotor() {
     return driveMotor;
   }
 
-  public CANSparkMax getRotationMotor() {
+  public TalonFX getRotationMotor() {
     return rotationMotor;
   }
-
-  private final TalonFXConfigurator driveEncoder;
-  private final RelativeEncoder rotationEncoder;
+  
+  public final TalonFXConfigurator driveEncoder;
+  public final TalonFXConfigurator rotationEncoder;
 
   private final CANCoder canCoder;
 
@@ -83,16 +92,21 @@ public class SwerveModule extends SubsystemBase {
     swerveDrive = swerveSubsystem;
   
     //Defines what spark to target
-    //driveMotor = new CANSparkMax(driveMotorId, MotorType.kBrushless);
-     driveMotor = new TalonFX(driveMotorId, "rio");
+    //driveMotor = new TalonFX(driveMotorId, MotorType.kBrushless);
+    driveMotor = new TalonFX(driveMotorId, "rio");
     driveMotorLimiter = new CurrentLimitsConfigs();
     driveMotor.getConfigurator().apply(driveMotorLimiter);
+    
 
-    rotationMotor = new CANSparkMax(rotationMotorId, MotorType.kBrushless);
+    rotationMotor = new TalonFX(driveMotorId, "rio");
+    rotationMotorLimiter = new CurrentLimitsConfigs();
+    rotationMotor.getConfigurator().apply(rotationMotorLimiter);
+    
+
 
     //Get encoder for that spark
     driveEncoder = driveMotor.getConfigurator();
-    rotationEncoder = rotationMotor.getEncoder();
+    rotationEncoder = rotationMotor.getConfigurator();
  
     //get canCoder
     canCoder = new CANCoder(canCoderId);
@@ -102,7 +116,7 @@ public class SwerveModule extends SubsystemBase {
 
     //Sets the Idle mode to brake so robot can not be pushed when motor is not in use
     //driveMotor.setIdleMode(IdleMode.kBrake);
-    rotationMotor.setIdleMode(IdleMode.kBrake);
+    //rotationMotor.setIdleMode(IdleMode.kBrake);
 
     //Sets PID controller to the SPARK
     // rotationController = rotationMotor.getPIDController();
@@ -122,6 +136,7 @@ public class SwerveModule extends SubsystemBase {
     RotationController = new PIDController(rotationmotorkP, 0, 0.0);
     RotationController.enableContinuousInput(-Math.PI, Math.PI);
 
+    DriveController = new PIDController(DriveControllerkp /*+ Slope*(optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed - auto speed)*/ , 0.0, 0.0);
     DriveControllerkp = drivemotorkP;
 
 
@@ -132,7 +147,20 @@ public class SwerveModule extends SubsystemBase {
 
 
     // set the output of the rotation encoder to be in radians
-    rotationEncoder.setPositionConversionFactor(2.0 * Math.PI / SwerveConstants.angleGearRatio);
+//     rotationEncoder.SensorToMechancilRatio(2.0 * Math.PI / SwerveConstants.angleGearRatio);
+
+//     rotationEncoder.Feedback.SensorToMechanismRatio = 1;
+
+//     rotationMotor.getFeedback().setSensorToMechanismRatio(1);
+
+//   // Set the sensor-to-mechanism ratio directly on the rotation motor
+// rotationMotor.configSensorTerm(TalonFXFeedbackDevice.IntegratedSensor, 1.0); // Adjust based on your requirements
+
+// // Example to configure feedback sensor
+// rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, 0);
+
+//    rotationMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor);
+
 
     // configure the CANCoder to output in unsigned (wrap around from 360 to 0
     // degrees)
@@ -165,7 +193,7 @@ public class SwerveModule extends SubsystemBase {
 
   public Rotation2d getIntegratedAngle() {
     // Wass
-    // double unsignedAngle = rotationEncoder.getPosition() % (2 * Math.PI);
+    // double unsignedAngle = rotationMotor.getPosition() % (2 * Math.PI);
 
     // if (unsignedAngle < 0)
     //   unsignedAngle += 2 * Math.PI;
@@ -173,9 +201,17 @@ public class SwerveModule extends SubsystemBase {
     // return new Rotation2d(unsignedAngle);
 
     //Carlos
-    return new Rotation2d(rotationEncoder.getPosition());
+   // return new Rotation2d(rotationEncoder.getPosition());
+    return new Rotation2d(rotationMotor.getPosition().getValueAsDouble()*AngleConversionFactor);
 
   }
+
+  //     public FeedbackConfigs withSensorToMechanismRatio(double newSensorToMechanismRatio)
+  //   {
+  //       SensorToMechanismRatio = newSensorToMechanismRatio;
+  //       return this;
+  //  }
+
 
   public double getCurrentVelocityRadiansPerSecond() {
 
@@ -274,16 +310,29 @@ public class SwerveModule extends SubsystemBase {
     //     optimizedDesiredState.angle.getRadians());
     double angularSetPoint = optimizedDesiredState.angle.getRadians();
 
-    rotationMotor.set(RotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint));
+
+    //Was rotationMotor.se(RotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint));
+    //Change to make more consistent thought set voltage
+    rotationMotor.setVoltage(RotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint)/SwerveConstants.maxAngularVelocity);
 
     double angularVelolictySetpoint = optimizedDesiredState.speedMetersPerSecond /
         (SwerveConstants.wheelDiameter / 2.0);
 
-      DriveController = new PIDController(DriveControllerkp /*+ Slope*(optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed - auto speed)*/ , 0.0, 0.0);
+     
       
     //driveMotor.set(DriveController.calculate(optimizedDesiredState.speedMetersPerSecond)*SwerveConstants.calibrationFactorSB);
    // driveMotor.set(testRotationController.calculate(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond/SwerveConstants.maxSpeed),optimizedDesiredState.speedMetersPerSecond/SwerveConstants.maxSpeed)*SwerveConstants.calibrationFactorSB);
-    driveMotor.set(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond/SwerveConstants.maxSpeed)*SwerveConstants.calibrationFactorSB);
+    
+   
+   
+   
+  //Was driveMotor.set(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond/SwerveConstants.maxSpeed)*SwerveConstants.calibrationFactorSB);
+  
+  //This soulde defently work
+  driveMotor.setVoltage(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond)/SwerveConstants.maxSpeed*SwerveConstants.calibrationFactorSB);
+ 
+ //This should compart to our current to make a feed back might not work becasue it might take all swerves into acount insted of one
+  driveMotor.setVoltage(-DriveController.calculate(optimizedDesiredState.speedMetersPerSecond,getCurrentVelocityMetersPerSecond())/SwerveConstants.maxSpeed*SwerveConstants.calibrationFactorSB);
     //System.out.print(optimizedDesiredState.speedMetersPerSecond);
 
     //Sets the max amps the swerve base can draw
