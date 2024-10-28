@@ -15,6 +15,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,6 +27,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.units.Current;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants;
@@ -61,7 +65,6 @@ public static double HowStraght;
 public static boolean TranslationClose;
 public static boolean RotationClose; 
 
-
 public static boolean AutoSetUpMoveLeft;
 public static boolean AutoSetUpMoveRight;
 public static boolean AutoSetUpMoveForward;
@@ -69,8 +72,6 @@ public static boolean AutoSetUpMoveBackward;
 public static boolean AutoSetUpRotateCounterClockWise;
 public static boolean AutoSetUpRotateCloskWise;
 public static boolean AutoSetUpCloseEnough;
-
-
 
 public static double LaneLogicPoseX;
 public static double LaneLogicPoseY;
@@ -80,11 +81,9 @@ public static boolean LaneLogicFinalDestination = false;
 // public static boolean AutoSetUpRotateCloskWise;
 // public static boolean AutoSetUpCloseEnough;
 
-
 //Value requested will not go over this value
 public static double MaxTranslationSpeed = 1.0;//3.5
 public static double MaxRotationSpeed = Math.PI;
-
 
 //Make the value reqest from the drive ramp the power to get to target
 //WARNING this could mess with deceleration if PID decelerates faster then is value
@@ -158,6 +157,35 @@ public static PIDController MoveToPoseRotation = new PIDController(0.00895, 0, 0
     RotationSpeedFinal = MaxRotationAcceleration.calculate(RotationSpeed);
 
 }
+
+/*Added 10/27/2024 has to be tested this will allow for robot to move not in a straight line 
+making it easier to make zone*/
+public static Command getAutoDrivingPath(int pathnumber) {
+
+    if(RobotState.isAutonomous()==true){
+        return AutoBuilder.buildAuto("StraitLineTest");
+    }
+    else if(RobotState.isAutonomous()==false){
+
+        if(pathnumber == 1){
+        return AutoBuilder.buildAuto("StraitLineTest");
+        }
+        if(pathnumber == 2){
+        return AutoBuilder.buildAuto("StraitLineTest");
+        }
+        if(pathnumber == 3){
+        return AutoBuilder.buildAuto("StraitLineTest");
+        }
+        else{return AutoBuilder.buildAuto("StraitLineTest");}
+    }
+    else{ return AutoBuilder.buildAuto("StraitLineTest");}
+
+}
+
+
+
+
+
 
 //The following method sets the target for the self driving systems 
 //Example of calling with a button: btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(1)));

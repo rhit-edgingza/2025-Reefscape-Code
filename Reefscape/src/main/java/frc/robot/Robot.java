@@ -52,10 +52,8 @@ public double TeleOpTime;
 public double startTimeTeleOp;
 public double currentTimeTeleOp;
 
+public static RobotContainer m_robotContainer;
 
-
-  public static RobotContainer m_robotContainer;
-  // public static ArmPivotSubsystem m_armPivot;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -64,9 +62,7 @@ public double currentTimeTeleOp;
   public void robotInit() {
     // Instantiate our RobotContainer.
     m_robotContainer = new RobotContainer(this);
-    // m_climber = new ClimberSubsystem();
  
-   // PortForwarder.add(5800, "photonvision.local", 5800);
 
    Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 

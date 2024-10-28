@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
-//import com.pathplanner.lib.path.PathPlanner;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.path.PathPoint;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -42,8 +41,6 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotState;
-// import com.pathplanner.lib.PathPlannerTrajectory;
-// import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -54,7 +51,6 @@ import frc.robot.Constants;
 
 public class SwerveBase extends SubsystemBase {  
   public static WPI_Pigeon2 pigeonSensor;
-  private final AHRS navX;
   private Pigeon2Configuration pigeonConfig;
   private double oldPigeonYaw = 0.0;
   public static boolean  isFieldRelative1 = true;
@@ -91,16 +87,13 @@ public void setSlowerSwerve(boolean set) {
 
 
   public SwerveBase() {
-    navX = new AHRS(SPI.Port.kMXP);
+
     pigeonSensor = new WPI_Pigeon2(Constants.SwerveConstants.PIGEON_SENSOR_ID);
     pigeonConfig = new Pigeon2Configuration();
     pigeonSensor.configFactoryDefault();
     pigeonSensor.reset();
     zeroPigeon();
 
-    // if(DriverStation.getAlliance().get() == Alliance.Red){
-    //   pigeonSensor.addYaw(90);
-    // }
     pigeonSensor.getAllConfigs(pigeonConfig);
 
 
@@ -206,7 +199,7 @@ public void setSlowerSwerve(boolean set) {
   /**
    * SwerveModule objects
    * Parameters:
-   * drive motor can ID
+   * drive motor CAN ID
    * drive motor PID value P
    * rotation motor can ID
    * rotation motor PID value P
@@ -488,14 +481,12 @@ public void setSlowerSwerve(boolean set) {
     return pigeonSensor;
   }
 
-  public AHRS getNavX() {
-   return navX;
-  }
-
   public SwerveDriveKinematics getKinematics() {
     return SwerveConstants.kinematics;
   }
 
+
+/*The following is all  code that was added to try to selfdrive in autp */
   // public Command goToNode(int apriltag, int node) {
   //   Rotation2d heading;
   //   Translation3d nodeTrans = Field.getNodeCoordinatesFieldRelative(apriltag, node);
@@ -526,20 +517,20 @@ public void setSlowerSwerve(boolean set) {
   //       new PathPoint(goal, Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180), -1)); // position, heading(direction of
   //                                                                                     // travel), holonomic rotation
   //   //return followTrajectoryCommand(trajToGoal, false);
-  //   return AutoBuilder.followPath(trajToGoal);
+  //  return AutoBuilder.followPath(trajToGoal);
   // }
 
 
 
-      // Different idea
-        // Pose3d currentPose = getPose3d();
-        // Pose3d tagPose = Vision.aprilTags.getTagPose(4).get();
+  //     Different idea
+  //       Pose3d currentPose = getPose3d();
+  //       Pose3d tagPose = Vision.aprilTags.getTagPose(4).get();
 
-        // return PathPlanner.generatePath(
-        //   PathConstraints(2.0, 4.0),
-        //   PathPoint(currentPose.translation, currentPose.rotation),
-        //   PathPoint(tagPose.translation.toTranslation2d() - Translation2d(2.0, 0.0), currentPose.rotation),
-        // );
+  //       return PathPlanner.generatePath(
+  //         PathConstraints(2.0, 4.0),
+  //         PathPoint(currentPose.translation, currentPose.rotation),
+  //         PathPoint(tagPose.translation.toTranslation2d() - Translation2d(2.0, 0.0), currentPose.rotation),
+  //       );
 
 }
 

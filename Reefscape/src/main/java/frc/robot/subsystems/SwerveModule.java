@@ -98,7 +98,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.getConfigurator().apply(driveMotorLimiter);
     
 
-    rotationMotor = new TalonFX(driveMotorId, "rio");
+    rotationMotor = new TalonFX(rotationMotorId, "rio");
     rotationMotorLimiter = new CurrentLimitsConfigs();
     rotationMotor.getConfigurator().apply(rotationMotorLimiter);
     
