@@ -4,33 +4,14 @@
 
 package frc.robot;
 
-import static frc.robot.Constants.VisionConstants.FIELD_LENGTH_METERS;
-import static frc.robot.Constants.VisionConstants.FIELD_WIDTH_METERS;
-
-import org.ejml.equation.ManagerFunctions.Input1;
-
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-
-
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
-
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.NoteDetection;
-import frc.robot.subsystems.SelfDriving;
-import frc.robot.subsystems.SwerveBase;
-
  
 
 /**
