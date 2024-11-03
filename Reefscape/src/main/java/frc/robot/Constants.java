@@ -199,7 +199,7 @@ import frc.robot.subsystems.SwerveBase;
 
     /*Coding Swerve
     1) If controler is diffent from previes year change Drive Controls
-    2) Set how far apart the wheels are in DriveTeain Constants
+    2) Set how far apart the wheels are in SwevreConstants
     3) Set the Diameter of the wheel in Wheel Diameter
     4) Get gear ratio off of Swerve Drive Specialties and set the in Gear Ratio
     5) Get max thoetical speeds from Swerve Drive Specialties best off of motor we are using

@@ -138,11 +138,11 @@ public void setSlowerSwerve(boolean set) {
    4) Unplug all cameras set enableInitialreplanning and enableDynamicReplanning to false now robot should drive with no correction software
    5) Run auto one adjust translation PID till satisfied
    6) Run auto two adjust rotation PID till satisfied
-   7) Test a full auto path and make sure robot mantans correct position 
+   7) Test a full auto path and make sure robot mantains correct position 
    8) If robot can complete and auto with no auto correction system enableDynamicReplanning run auto but use a spare robot to 
    bump it where it might hit another robot adjust DynamicReplanningError Threshold till it can correct of a bump Range should be 0-100 check 
    pathplanner to see if value was changed
-   9) If you wish enableInitialReplanning it will use cameras to correct starting Pose (hopefullu the LEDs can do that)
+   9) If you wish enableInitialReplanning it will use cameras to correct starting Pose (hopefully the LEDs can do that)
    10) Add in camera and repeat bumptest to insure variable are right can do a bigger hit and see if camera adjust for it
     
     */
