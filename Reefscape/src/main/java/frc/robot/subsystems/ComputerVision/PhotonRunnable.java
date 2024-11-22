@@ -1,5 +1,5 @@
 //DO NOT TOUCH sould not need to update if verion is off see Photon Lib instead
-package frc.robot.subsystems;
+package frc.robot.subsystems.ComputerVision;
 
 import static frc.robot.Constants.VisionConstants.APRILTAG_AMBIGUITY_THRESHOLD;
 import static frc.robot.Constants.VisionConstants.APRILTAG_CAMERA_TO_ROBOT_1;

@@ -26,10 +26,10 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import frc.robot.Constants.BuildConstants;
-import frc.robot.subsystems.AprilTagSubsystem;
 import frc.robot.subsystems.PowerDistributionPanel;
-import frc.robot.subsystems.SwerveBase;
-import frc.robot.subsystems.NoteDetection;
+import frc.robot.subsystems.ComputerVision.AprilTagSubsystem;
+import frc.robot.subsystems.ComputerVision.NoteDetection;
+import frc.robot.subsystems.Drive.SwerveBase;
 
 
 

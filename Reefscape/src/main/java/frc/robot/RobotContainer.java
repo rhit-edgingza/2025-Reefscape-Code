@@ -17,6 +17,10 @@ import frc.robot.commands.Swerve.MoveToNote;
 import frc.robot.commands.Swerve.MoveToPose;
 import frc.robot.commands.Swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.ComputerVision.AprilTagSubsystem;
+import frc.robot.subsystems.ComputerVision.NoteDetection;
+import frc.robot.subsystems.Drive.SelfDriving;
+import frc.robot.subsystems.Drive.SwerveBase;
 import frc.robot.Constants.*;
 
 import java.util.function.BiFunction;

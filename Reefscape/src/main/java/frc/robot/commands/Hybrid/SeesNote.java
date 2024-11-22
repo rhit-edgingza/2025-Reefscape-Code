@@ -4,13 +4,12 @@
 
 package frc.robot.commands.Hybrid;
 
-import frc.robot.subsystems.NoteDetection;
-import frc.robot.subsystems.SelfDriving;
-import frc.robot.subsystems.SwerveBase;
+import frc.robot.subsystems.ComputerVision.NoteDetection;
+import frc.robot.subsystems.Drive.SelfDriving;
+import frc.robot.subsystems.Drive.SwerveBase;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.SwerveBase;
-import frc.robot.subsystems.NoteDetection;
+
 import java.util.function.BiFunction;
 
 

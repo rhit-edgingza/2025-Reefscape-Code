@@ -7,12 +7,12 @@ package frc.robot.commands.Hybrid.LineBreakFullShooter;
 import frc.robot.Constants.ArmPivotConstants;
 import frc.robot.Constants.LineBreakConstants;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.ComputerVision.NoteDetection;
 //import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import frc.robot.subsystems.NoteDetection;
-import frc.robot.subsystems.SwerveBase;
+import frc.robot.subsystems.Drive.SwerveBase;
 import frc.robot.Constants.LEDConstants;
 
 /** An example command that uses an example subsystem. */

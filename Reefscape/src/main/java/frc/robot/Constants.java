@@ -27,9 +27,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.NoteDetection;
-import frc.robot.subsystems.SelfDriving;
-import frc.robot.subsystems.SwerveBase;
+import frc.robot.subsystems.ComputerVision.NoteDetection;
+import frc.robot.subsystems.Drive.SelfDriving;
+import frc.robot.subsystems.Drive.SwerveBase;
 
  
 

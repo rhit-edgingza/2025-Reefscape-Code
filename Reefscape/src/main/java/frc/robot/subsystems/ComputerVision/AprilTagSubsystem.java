@@ -7,7 +7,7 @@
  * 
  */
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.ComputerVision;
 
 import javax.xml.crypto.dsig.Transform;
 
@@ -35,9 +35,10 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.ComputerVision.LimelightHelpers.LimelightResults;
+import frc.robot.subsystems.ComputerVision.LimelightHelpers.PoseEstimate;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.LimelightHelpers.LimelightResults;
 
 
 public class AprilTagSubsystem extends SubsystemBase {
