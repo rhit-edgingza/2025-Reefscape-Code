@@ -20,9 +20,9 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
-public interface GryroIO {
+public interface GyroIO {
   @AutoLog
-  public static class GryroIOInputs {
+  public static class GyroIOInputs {
     public double _pigeonSensorYaw = 0.0;
     public double _pigeonSensorPitch = 0.0;
     public double _pigeonSensorRoll = 0.0;
@@ -31,7 +31,7 @@ public interface GryroIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(GryroIOInputs inputs) {}
+  public default void updateInputs(GyroIOInputs inputs) {}
 
     public default void zeroPigeon() {}
 

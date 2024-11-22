@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.SPI;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 
-public class RealGyroIO implements GryroIO {
+public class RealGyroIO implements GyroIO {
     private TalonFX _driveMotor;
     private TalonFX _rotateMotor;
     private CANcoder _cancoder;
@@ -36,7 +36,7 @@ public class RealGyroIO implements GryroIO {
     }
 
     /** Updates the set of loggable inputs. */
-    public void updateInputs(GryroIOInputs inputs) {
+    public void updateInputs(GyroIOInputs inputs) {
         inputs._pigeonSensorYaw = _pigeonSensor.getYaw();
         inputs._pigeonSensorPitch = _pigeonSensor.getPitch();
         inputs._pigeonSensorRoll = _pigeonSensor.getRoll();

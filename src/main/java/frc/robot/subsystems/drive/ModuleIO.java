@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import frc.robot.Constants.SwerveConstants;
 
 public interface ModuleIO {
   @AutoLog

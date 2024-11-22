@@ -1,10 +1,14 @@
 package frc.robot.subsystems.drive;
 
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants;
 import frc.robot.Constants.*;
 
 public class SwerveModule extends SubsystemBase {
@@ -22,22 +26,72 @@ public class SwerveModule extends SubsystemBase {
     private final ModuleIO _io;
     private final ModuleIOInputsAutoLogged _inputs = new ModuleIOInputsAutoLogged();
 
-    public SwerveModule(
-            ModuleIO io,
-            int driveMotorId,
-            double drivemotorkP,
-            int rotationMotorId,
-            double rotationmotorkP,
-            int canCoderId,
-            double measuredOffsetRadians) {
 
-        _io = io;
 
-        _rotationController = new PIDController(rotationmotorkP, 0, 0.0);
-        _rotationController.enableContinuousInput(-Math.PI, Math.PI);
+    private final ModuleIO io;
+    private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+    private final int index;
 
-        _driveController = new PIDController(drivemotorkP, 0.0, 0.0);
+
+    private final SimpleMotorFeedforward driveFeedforward;
+    private final PIDController driveFeedback;
+    private final PIDController turnFeedback;
+
+
+   public SwerveModule(ModuleIO io, int index) {
+    this.io = io;
+    this.index = index;
+
+    // Switch constants based on mode (the physics simulator is treated as a
+    // separate robot with different tuning)
+    switch (Constants.currentMode) {
+      case REAL:
+      case REPLAY:
+        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
+        driveFeedback = new PIDController(0.05, 0.0, 0.0);
+        turnFeedback = new PIDController(7.0, 0.0, 0.0);
+        break;
+      case SIM:
+        driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
+        driveFeedback = new PIDController(0.1, 0.0, 0.0);
+        turnFeedback = new PIDController(10.0, 0.0, 0.0);
+        break;
+      default:
+        driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
+        driveFeedback = new PIDController(0.0, 0.0, 0.0);
+        turnFeedback = new PIDController(0.0, 0.0, 0.0);
+        break;
     }
+
+    turnFeedback.enableContinuousInput(-Math.PI, Math.PI);
+    setBrakeMode(true);
+  }
+
+ 
+  public void setBrakeMode(boolean enabled) {
+    io.setDriveBrakeMode(enabled);
+    io.setTurnBrakeMode(enabled);
+  }
+
+
+
+
+    // public SwerveModule(
+    //         ModuleIO io,
+    //         int driveMotorId,
+    //         double drivemotorkP,
+    //         int rotationMotorId,
+    //         double rotationmotorkP,
+    //         int canCoderId,
+    //         double measuredOffsetRadians) {
+
+    //     _io = io;
+
+    //     _rotationController = new PIDController(rotationmotorkP, 0, 0.0);
+    //     _rotationController.enableContinuousInput(-Math.PI, Math.PI);
+
+    //     _driveController = new PIDController(drivemotorkP, 0.0, 0.0);
+    // }
 
     public void resetDistance() {
         _io.resetDriveEncoder();
