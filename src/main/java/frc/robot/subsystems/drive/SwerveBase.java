@@ -4,7 +4,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.subsystems.drive.GyroIO.GyroIOInputs;
 import frc.robot.RobotContainer;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -31,6 +33,7 @@ import java.sql.Driver;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotState;
@@ -41,14 +44,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants;
+import frc.robot.Constants.*;
+import frc.robot.Constants.SwerveConstants;
 
 public class SwerveBase extends SubsystemBase {
-    public static WPI_Pigeon2 pigeonSensor;
-    private final AHRS navX;
-    private Pigeon2Configuration pigeonConfig;
-    private double oldPigeonYaw = 0.0;
-    public static boolean isFieldRelative1 = true;
 
+    public static boolean isFieldRelative1 = true;
     public static boolean AllowMainDriving = true;
     public static boolean GettingNote = false;
     public static double translation;
@@ -61,6 +62,15 @@ public class SwerveBase extends SubsystemBase {
     public static double currentPoseRotation;
 
     public static double SwerveTuneingkP;
+
+    // private final GryroIO _io;
+    // private final GryroIOInputsAutoLogged _inputs = new GryroIOInputsAutoLogged();
+
+    private final GyroIO gyroIO;
+    private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+    private final SwerveModule[] modules = new SwerveModule[4]; // FL, FR, BL, BR
+    private final SysIdRoutine sysId;
+
 
     // Checks if setNeedMoreAmps is True of false and change need more
     // amps based on if the command is being called
@@ -80,18 +90,18 @@ public class SwerveBase extends SubsystemBase {
         SlowerSwerve = set;
     }
 
-    public SwerveBase() {
-        navX = new AHRS(SPI.Port.kMXP);
-        pigeonSensor = new WPI_Pigeon2(Constants.SwerveConstants.PIGEON_SENSOR_ID);
-        pigeonConfig = new Pigeon2Configuration();
-        pigeonSensor.configFactoryDefault();
-        pigeonSensor.reset();
-        zeroPigeon();
+    public SwerveBase(      
+    RealGyroIO gyroIO,
+    ModuleIO FLModuleIO,
+    ModuleIO FRModuleIO,
+    ModuleIO RLModuleIO,
+    ModuleIO RRModuleIO) {
+  this.gyroIO = gyroIO;
+  modules[1] = new SwerveModule(FLModuleIO, 1);
+  modules[2] = new SwerveModule(FRModuleIO, 2);
+  modules[3] = new SwerveModule(RLModuleIO, 3);
+  modules[4] = new SwerveModule(RRModuleIO, 4);
 
-        // if(DriverStation.getAlliance().get() == Alliance.Red){
-        // pigeonSensor.addYaw(90);
-        // }
-        pigeonSensor.getAllConfigs(pigeonConfig);
 
         odometry.resetPosition(new Rotation2d(), getModulePositions(), new Pose2d());
 
@@ -120,6 +130,39 @@ public class SwerveBase extends SubsystemBase {
         rearLeft.getRotationMotor().setInverted(false);
         frontRight.getRotationMotor().setInverted(false);
         frontLeft.getRotationMotor().setInverted(false);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         double driveBaseRadius = Constants.SwerveConstants.mDriveRadius.getNorm();
 
@@ -185,7 +228,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     public void zeroPigeon() {
-        pigeonSensor.reset();
+        _io.zeroPigeon();
     }
 
     /**
@@ -219,38 +262,41 @@ public class SwerveBase extends SubsystemBase {
      */
 
     public final SwerveModule frontLeft = new SwerveModule(
-            SwerveConstants.frontLeftDriveMotorId,
-            SwerveConstants.frontLeft_Drive_kP,
-            SwerveConstants.frontLeftRotationMotorId,
-            SwerveConstants.frontLeft_Rotation_kP,
-            SwerveConstants.frontLeftRotationEncoderId,
+            
+            Constants.SwerveConstants.frontLeftDriveMotorId,
+            Constants.SwerveConstants.frontLeft_Drive_kP,
+            Constants.SwerveConstants.frontLeftRotationMotorId,
+            Constants.SwerveConstants.frontLeft_Rotation_kP,
+            Constants.SwerveConstants.frontLeftRotationEncoderId,
             frontLeftAngleOffset,
             this);
 
     public final SwerveModule frontRight = new SwerveModule(
-            SwerveConstants.frontRightDriveMotorId,
-            SwerveConstants.frontRight_Drive_kP,
-            SwerveConstants.frontRightRotationMotorId,
-            SwerveConstants.frontRight_Rotation_kP,
-            SwerveConstants.frontRightRotationEncoderId,
+            Constants.SwerveConstants.frontRightDriveMotorId,
+            Constants.SwerveConstants.frontRight_Drive_kP,
+            Constants.SwerveConstants.frontRightRotationMotorId,
+            Constants.SwerveConstants.frontRight_Rotation_kP,
+            Constants.SwerveConstants.frontRightRotationEncoderId,
             frontRightAngleOffset,
             this);
 
     public final SwerveModule rearLeft = new SwerveModule(
-            SwerveConstants.rearLeftDriveMotorId,
-            SwerveConstants.rearLeft_Drive_kP,
-            SwerveConstants.rearLeftRotationMotorId,
-            SwerveConstants.rearLeft_Rotation_kP,
-            SwerveConstants.rearLeftRotationEncoderId,
+        
+            Constants.SwerveConstants.rearLeftDriveMotorId,
+            Constants.SwerveConstants.rearLeft_Drive_kP,
+            Constants.SwerveConstants.rearLeftRotationMotorId,
+            Constants.SwerveConstants.rearLeft_Rotation_kP,
+            Constants.SwerveConstants.rearLeftRotationEncoderId,
             rearLeftAngleOffset,
             this);
 
     public final SwerveModule rearRight = new SwerveModule(
-            SwerveConstants.rearRightDriveMotorId,
-            SwerveConstants.rearRight_Drive_kP,
-            SwerveConstants.rearRightRotationMotorId,
-            SwerveConstants.rearRight_Rotation_kP,
-            SwerveConstants.rearRightRotationEncoderId,
+
+            Constants.SwerveConstants.rearRightDriveMotorId,
+            Constants.SwerveConstants.rearRight_Drive_kP,
+            Constants.SwerveConstants.rearRightRotationMotorId,
+            Constants.SwerveConstants.rearRight_Rotation_kP,
+            Constants.SwerveConstants.rearRightRotationEncoderId,
             rearRightAngleOffset,
             this);
 
@@ -260,7 +306,7 @@ public class SwerveBase extends SubsystemBase {
      * Takes in kinematics and robot angle for parameters
      */
 
-    private final SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(SwerveConstants.kinematics,
+    private final SwerveDrivePoseEstimator odometry = new SwerveDrivePoseEstimator(Constants.SwerveConstants.kinematics,
             new Rotation2d(),
             getModulePositions(), new Pose2d());
     private boolean needPigeonReset = false;
@@ -292,12 +338,12 @@ public class SwerveBase extends SubsystemBase {
                 getPose().toString());
         SmartDashboard.putNumber("Bot Heading",
                 getHeading().getDegrees());
-        SmartDashboard.putString("Pigeon Rotation",
-                pigeonSensor.getRotation2d().toString());
+        SmartDashboard.putNumber("Pigeon Rotation",
+        _inputs._pigeonCompassHeading);
         SmartDashboard.putNumber("Pigeon Yaw",
-                pigeonSensor.getYaw());
+        _inputs._pigeonSensorYaw);
         SmartDashboard.putNumber("Pigeon Compass",
-                pigeonSensor.getCompassHeading());
+        _inputs._pigeonCompassHeading);
 
         SmartDashboard.putString("FL Wheel Angle", frontLeft.getCanCoderAngle().toString());
         SmartDashboard.putString("FR Wheel Angle", frontRight.getCanCoderAngle().toString());
@@ -305,13 +351,13 @@ public class SwerveBase extends SubsystemBase {
         SmartDashboard.putString("RR Wheel Angle", rearRight.getCanCoderAngle().toString());
 
         SmartDashboard.putNumber("FL Wheel Speed",
-                frontLeft.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * SwerveConstants.wheelCircumference);
+                frontLeft.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
         SmartDashboard.putNumber("FR Wheel Speed",
-                frontRight.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * SwerveConstants.wheelCircumference);
+                frontRight.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
         SmartDashboard.putNumber("RL Wheel Speed",
-                rearLeft.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * SwerveConstants.wheelCircumference);
+                rearLeft.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
         SmartDashboard.putNumber("RR Wheel Speed",
-                rearRight.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * SwerveConstants.wheelCircumference);
+                rearRight.getCurrentVelocityRadiansPerSecond() / (2 * Math.PI) * Constants.SwerveConstants.wheelCircumference);
 
         SmartDashboard.putNumber("FL Wheel Speed2", Math.round(frontLeft.getCurrentVelocityMetersPerSecond()));
         SmartDashboard.putNumber("FR Wheel Speed2", Math.round(frontRight.getCurrentVelocityMetersPerSecond()));
@@ -344,7 +390,7 @@ public class SwerveBase extends SubsystemBase {
         // pigeon yaw not going back to normal after
         if (needPigeonReset) {
             needPigeonReset = false;
-            pigeonSensor.setYaw(oldPigeonYaw);
+            _io.setHeadingForward();
             isFieldRelative1 = true;
         }
 
@@ -361,7 +407,7 @@ public class SwerveBase extends SubsystemBase {
 
         // use kinematics (wheel placements) to convert overall robot state to array of
         // individual module states
-        SwerveModuleState[] states = SwerveConstants.kinematics.toSwerveModuleStates(speeds);
+        SwerveModuleState[] states = Constants.SwerveConstants.kinematics.toSwerveModuleStates(speeds);
 
         setModuleStates(states);
 
@@ -376,12 +422,12 @@ public class SwerveBase extends SubsystemBase {
 
     public Rotation2d getGyroscopeRotation() {
 
-        return Rotation2d.fromDegrees(pigeonSensor.getCompassHeading());
+        return Rotation2d.fromDegrees(_inputs._pigeonCompassHeading);
 
     }
 
     public void robotRelativeDrive(ChassisSpeeds speeds) {
-        setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(speeds));
+        setModuleStates(Constants.SwerveConstants.kinematics.toSwerveModuleStates(speeds));
     }
 
     /**
@@ -391,7 +437,7 @@ public class SwerveBase extends SubsystemBase {
      */
     public void setModuleStates(SwerveModuleState[] moduleStates) {
         // make sure the wheels don't try to spin faster than the maximum speed possible
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, SwerveConstants.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.SwerveConstants.maxSpeed);
         frontLeft.setDesiredStateClosedLoop(moduleStates[0]);
         frontRight.setDesiredStateClosedLoop(moduleStates[1]);
         rearLeft.setDesiredStateClosedLoop(moduleStates[2]);
@@ -458,7 +504,7 @@ public class SwerveBase extends SubsystemBase {
     public Rotation2d getHeading() {
 
         return Rotation2d.fromDegrees(
-                pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet + RobotContainer.AutoPigeonOfSet);
+                _inputs._pigeonSensorYaw + Constants.SwerveConstants.NormalPigeonOfSet + RobotContainer.AutoPigeonOfSet);
 
     }
 
@@ -468,12 +514,12 @@ public class SwerveBase extends SubsystemBase {
     // pigeon heading
     public Rotation2d getHeadingDrive() {
         if (isFieldRelative1 == true) {
-            return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet);
+            return Rotation2d.fromDegrees(_inputs._pigeonSensorYaw + Constants.SwerveConstants.NormalPigeonOfSet);
         }
         if (RobotState.isAutonomous()) {
-            return Rotation2d.fromDegrees(pigeonSensor.getYaw() + SwerveConstants.NormalPigeonOfSet);
+            return Rotation2d.fromDegrees(_inputs._pigeonSensorYaw + Constants.SwerveConstants.NormalPigeonOfSet);
         } else {
-            return Rotation2d.fromDegrees(SwerveConstants.NormalPigeonOfSet);
+            return Rotation2d.fromDegrees(Constants.SwerveConstants.NormalPigeonOfSet);
         }
     }
 
@@ -491,16 +537,10 @@ public class SwerveBase extends SubsystemBase {
         rearLeft.stop();
     }
 
-    public WPI_Pigeon2 getPigeonSensor() {
-        return pigeonSensor;
-    }
 
-    public AHRS getNavX() {
-        return navX;
-    }
 
     public SwerveDriveKinematics getKinematics() {
-        return SwerveConstants.kinematics;
+        return Constants.SwerveConstants.kinematics;
     }
 
     // public Command goToNode(int apriltag, int node) {

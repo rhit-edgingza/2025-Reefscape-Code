@@ -30,7 +30,7 @@ import frc.robot.Constants;
 import frc.robot.Main;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.Swerve.MoveToNoteByPose;
-import frc.robot.subsystems.SwerveBase;
+import frc.robot.subsystems.drive.SwerveBase;
 
 
 public class NoteDetection extends SubsystemBase {

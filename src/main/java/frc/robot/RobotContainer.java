@@ -17,6 +17,7 @@ import frc.robot.commands.Swerve.MoveToNote;
 import frc.robot.commands.Swerve.MoveToPose;
 import frc.robot.commands.Swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.drive.*;
 import frc.robot.Constants.*;
 
 import java.util.function.BiFunction;
@@ -49,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.*;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public static SwerveBase m_swerveBase = new SwerveBase();
+  public static SwerveModule m_swerveModule = new SwerveModule();
   public static AprilTagSubsystem m_aprilTag = new AprilTagSubsystem();
   public static LEDSubsystem m_led = new LEDSubsystem();
   public static SelfDriving m_selfDriving = new SelfDriving();
@@ -145,11 +147,110 @@ public class RobotContainer {
   private final CommandXboxController m_driverController = 
   new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+
+
+
+
+
+  private final SwerveBase m_SwerveBase;
+
+
+
+
+
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer(Robot robot) {
     m_robot = robot;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    switch (Constants.currentMode) {
+
+    case REAL:
+    // Real robot, instantiate hardware IO implementations
+    m_swerveBase =
+        new SwerveBase(
+            new RealGyroIO() {},
+            new RealModuleIO(1),
+            new RealModuleIO(2),
+            new RealModuleIO(3),
+            new RealModuleIO(4));
+
+  
+    // drive = new Drive(
+    // new GyroIOPigeon2(),
+    // new ModuleIOTalonFX(0),
+    // new ModuleIOTalonFX(1),
+    // new ModuleIOTalonFX(2),
+    // new ModuleIOTalonFX(3));
+    // flywheel = new Flywheel(new FlywheelIOTalonFX());
+    break;
+
+  case SIM:
+    // Sim robot, instantiate physics sim IO implementations
+    m_swerveModule =
+        new Drive(
+            new GyroIO() {},
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim(),
+            new ModuleIOSim());
+    flywheel = new Flywheel(new FlywheelIOSim());
+    break;
+
+  default:
+    // Replayed robot, disable IO implementations
+    drive =
+        new Drive(
+            new GyroIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {},
+            new ModuleIO() {});
+    flywheel = new Flywheel(new FlywheelIO() {});
+    break;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //Defines what port of the compter each controler will be located in
     driverJoystick = new Joystick(0);
@@ -245,7 +346,7 @@ public class RobotContainer {
             () -> (-(driverJoystick.getRawAxis(SwerveConstants.sliderAxis)-1)/2.5+0.2),
             () -> !driverJoystick.getRawButton(1) // inverted=fieldCentric, non-inverted=RobotCentric
           
-        ) );
+        ));
  
     // Configure the trigger bindings
     configureBindings();

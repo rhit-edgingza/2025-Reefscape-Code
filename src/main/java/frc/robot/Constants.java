@@ -176,7 +176,7 @@ import edu.wpi.first.math.util.Units;
 
   }
 
-  public static final class SwerveConstants {
+  public static class SwerveConstants {
 
     /*Coding Swerve
     1) If controler is diffent from previes year change Drive Controls
